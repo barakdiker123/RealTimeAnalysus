@@ -225,22 +225,6 @@ shapesVis(pcl::PointCloud<pcl::PointXYZ>::ConstPtr cloud) {
 bool operator==(const pcl::PointXYZ &lhs, const pcl::PointXYZ &rhs) {
   return lhs.x == rhs.x && lhs.y == rhs.y && rhs.z == lhs.z;
 }
-struct MyHash {
-  std::size_t operator()(pcl::PointXYZ const &s) const noexcept {
-    std::size_t h1 = std::hash<float>{}(s.x);
-    std::size_t h2 = std::hash<float>{}(s.y);
-    std::size_t h3 = std::hash<float>{}(s.z);
-    return h1 ^ (h2 << 1) ^ (h3 << 2); // or use boost::hash_combine
-  }
-};
-template <> struct std::hash<pcl::PointXYZ> {
-  std::size_t operator()(pcl::PointXYZ const &s) const noexcept {
-    std::size_t h1 = std::hash<float>{}(s.x);
-    std::size_t h2 = std::hash<float>{}(s.y);
-    std::size_t h3 = std::hash<float>{}(s.z);
-    return h1 ^ (h2 << 1) ^ (h3 << 2); // or use boost::hash_combine
-  }
-};
 
 // end Hashable
 
