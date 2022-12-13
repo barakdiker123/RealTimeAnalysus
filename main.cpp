@@ -1,9 +1,11 @@
 #include "lemon/core.h"
+#include "visualizer_cloud_and_path.hpp"
 #include <chrono>
 #include <iostream>
 #include <lemon/bfs.h>
 #include <lemon/list_graph.h>
 #include <lemon/maps.h>
+#include <list>
 #include <pcl/common/common_headers.h>
 #include <pcl/console/parse.h>
 #include <pcl/features/normal_3d.h>
@@ -13,170 +15,12 @@
 #include <sstream>
 #include <thread>
 
-float ScaleFactor = 0.5;
-using namespace std::chrono_literals;
-
-struct Edge {
-  pcl::PointXYZ p_point1;
-  pcl::PointXYZ p_point2;
-};
-
-/**
- * @brief This function search for additional points in the radius
- * of "PointXYZ searchPoint"
- * @param cloud -> The Cloud
- * @param searchPoint -> the point I am searching around
- * @param radius -> The radius of search
- * @return -> number of points that are in the neigbourhood of searchPoint
- */
-int radiusSearch(pcl::PointCloud<pcl::PointXYZ>::ConstPtr cloud,
-                 pcl::PointXYZ searchPoint, float radius,
-                 pcl::KdTreeFLANN<pcl::PointXYZ> &kdtree) {
-  // pcl::KdTreeFLANN<pcl::PointXYZ> kdtree;
-  // kdtree.setInputCloud(cloud);
-  //  Neighbors within radius search
-  std::vector<int> pointIdxRadiusSearch;
-  std::vector<float> pointRadiusSquaredDistance;
-  return kdtree.radiusSearch(searchPoint, radius, pointIdxRadiusSearch,
-                             pointRadiusSquaredDistance);
-}
-pcl::PointXYZ operator-(pcl::PointXYZ p1, pcl::PointXYZ p2) {
-  pcl::PointXYZ p3;
-  p3.x = p1.x - p2.x;
-  p3.y = p1.y - p2.y;
-  p3.z = p1.z - p2.z;
-  return p3;
-}
-float norm(pcl::PointXYZ p1) {
-  return sqrt(p1.x * p1.x + p1.y * p1.y + p1.z * p1.z);
-}
-pcl::PointXYZ operator/(pcl::PointXYZ p1, float d) {
-  pcl::PointXYZ p3;
-  if (d == 0) {
-    p3.x = p1.x;
-    p3.y = p1.y;
-    p3.z = p1.z;
-    return p3;
+void viewRRTFunction(pcl::visualization::PCLVisualizer::Ptr viewer) {
+  while (!viewer->wasStopped()) {
+    viewer->spinOnce(100);
+    std::this_thread::sleep_for(100ms);
   }
-  p3.x = p1.x / d;
-  p3.y = p1.y / d;
-  p3.z = p1.z / d;
-  return p3;
 }
-/**
- * @brief copy point1 to point2
- * @param pcl::PointXYZ point1[in] -> input point
- * @param pcl::PointXYZ point2[in] -> output
- * @return -> None
- */
-void copy(pcl::PointXYZ &point1, pcl::PointXYZ &point2) {
-  point2.x = point1.x;
-  point2.y = point1.y;
-  point2.z = point1.z;
-}
-/**
- * @brief Given 2 vectors of size 3*1 and 3*1
- * returns the matrix multipication
- * @param pcl::PointXYZ p1[in] -> is the first point
- * @param pcl::PointXYZ p2[in] -> is the second point
- * @return float -> The matrix mul (1*3)*(3*1)
- */
-float operator*(pcl::PointXYZ p1, pcl::PointXYZ p2) {
-  return p1.x * p2.x + p1.y * p2.y + p1.z * p2.z;
-}
-pcl::PointXYZ operator*(pcl::PointXYZ p1, float a) {
-  return pcl::PointXYZ(p1.x * a, p1.y * a, p1.z * a);
-}
-
-pcl::PointXYZ operator*(float a, pcl::PointXYZ p1) {
-  return pcl::PointXYZ(p1.x * a, p1.y * a, p1.z * a);
-}
-pcl::PointXYZ operator+(pcl::PointXYZ p1, pcl::PointXYZ p2) {
-  return pcl::PointXYZ(p1.x + p2.x, p1.y + p2.y, p1.z + p2.z);
-}
-
-/**
- * @brief
- * This function build a line between @var start and @var end
- * and return all inside the line with distance at least
- * @var jump_distance
- * @param pcl::PointXYZ start -> 1 of the points to create a line
- * @param pcl::PointXYZ end -> the other point to create the line
- * @param float jump_distance -> sets the minimum distance of the point on line
- * @return -> all points on line with distance at least @var jump_distance
- */
-std::vector<pcl::PointXYZ> get_points_on_line(pcl::PointXYZ start,
-                                              pcl::PointXYZ end,
-                                              float jump_distance) {
-  std::vector<pcl::PointXYZ> points_on_line;
-  pcl::PointXYZ start2end;
-  start2end = end - start;
-  float total_travel_line = sqrt(start2end * start2end);
-  pcl::PointXYZ hat_p = start2end / total_travel_line;
-  for (float i = jump_distance * 1; i < total_travel_line;
-       i = i + jump_distance) {
-    pcl::PointXYZ p = start + hat_p * i;
-    // std::cout << p.x << "," << p.y <<"," << p.z <<std::endl;
-    points_on_line.push_back(p);
-  }
-  return points_on_line;
-}
-
-bool is_valid_movement(pcl::PointCloud<pcl::PointXYZ>::ConstPtr cloud,
-                       pcl::PointXYZ current_point, pcl::PointXYZ dest_point,
-                       pcl::KdTreeFLANN<pcl::PointXYZ> &kdtree) {
-  float jump_distance = 0.1 * ScaleFactor; // Magic number ?
-  float radius_search = 0.25 * ScaleFactor;
-  std::vector<pcl::PointXYZ> v_points_on_line =
-      get_points_on_line(current_point, dest_point, jump_distance);
-  for (pcl::PointXYZ &p : v_points_on_line) {
-    if (radiusSearch(cloud, p, radius_search, kdtree) > 5) {
-      // std::cout <<"Found Obstacle"<< p.x << "," <<p.y << "," <<p.z<<
-      // std::endl;
-      return false;
-    }
-  }
-  return true;
-}
-// void test_valid_movement(pcl::PointCloud<pcl::PointXYZ>::ConstPtr cloud,
-//                          pcl::KdTreeFLANN<pcl::PointXYZ> kdtree) {
-//   pcl::PointXYZ p1 = {-5, 0.5, 3};
-//   pcl::PointXYZ p2 = {-5, 0.5, 4};
-//   if (is_valid_movement(cloud, p1, p2, kdtree) == true) {
-//     std::cout << " Success ! " << std::endl;
-//   } else {
-//     std::cout << " Failed  " << std::endl;
-//   }
-// }
-
-/**
- * @brief This function finds random point on plane
- * the plane is define by those three points which are point1 point2 point3
- * @warning point1 , point2 , point3 should not be on the same line
- * preferably they should be perpedicular
- * @param point1[in] -> should be point on plane
- * @param point2[in] -> should be point on plane
- * @param point3[in] -> should be point on plane
- * @returns randomVectorOnPlane -> random point on plane !
- *
- * */
-pcl::PointXYZ getRandomPointOnPlaneDefBy3Points(pcl::PointXYZ point1,
-                                                pcl::PointXYZ point2,
-                                                pcl::PointXYZ point3) {
-  pcl::PointXYZ spanVector1 = point3 - point1;
-  pcl::PointXYZ spanVector2 = point3 - point2;
-
-  std::random_device
-      rd; // Will be used to obtain a seed for the random number engine
-  std::mt19937 gen(rd()); // Standard mersenne_twister_engine seeded with rd()
-  std::uniform_real_distribution<> dis(-30.0, 30.0);
-  float RandomNum1 = dis(gen);
-  float RandomNum2 = dis(gen);
-  pcl::PointXYZ randomVectorOnPlane =
-      RandomNum1 * spanVector1 + RandomNum2 * spanVector2 + point1;
-  return randomVectorOnPlane;
-}
-
 pcl::visualization::PCLVisualizer::Ptr
 shapesVis(pcl::PointCloud<pcl::PointXYZ>::ConstPtr cloud) {
   // --------------------------------------------
@@ -221,14 +65,15 @@ shapesVis(pcl::PointCloud<pcl::PointXYZ>::ConstPtr cloud) {
   return (viewer);
 }
 
-// Hashable function for pcl::PointXYZ
 bool operator==(const pcl::PointXYZ &lhs, const pcl::PointXYZ &rhs) {
   return lhs.x == rhs.x && lhs.y == rhs.y && rhs.z == lhs.z;
 }
-
 // end Hashable
 
-int main(int argc, char **argv) {
+void get_navigation_points(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud,
+                           pcl::PointXYZ knownPoint1, pcl::PointXYZ knownPoint2,
+                           pcl::PointXYZ knownPoint3,
+                           std::list<pcl::PointXYZ> &path_to_the_unknown) {
   lemon::ListGraph RRTGraph;
   lemon::ListGraph::NodeMap<pcl::PointXYZ> nodeToPoint(RRTGraph);
   // std::unordered_map<pcl::PointXYZ, lemon::ListGraph::Node> pointToNode;
@@ -240,9 +85,6 @@ int main(int argc, char **argv) {
   // pcl::PointXYZ knownPoint1 = {-0.152039, -0.112927 , 0.521806};
   // pcl::PointXYZ knownPoint2 = {-0.0388202, 0.0144199 , -0.150134};
   // pcl::PointXYZ knownPoint3 = {0.0739677 , 0.0088157 , -0.170298};
-  pcl::PointXYZ knownPoint1 = {0.114433, -0.0792644 + 0.0, 0.238077};
-  pcl::PointXYZ knownPoint2 = {0.0119525, -0.00770169 + 0.0, -0.0757213};
-  pcl::PointXYZ knownPoint3 = {0.548205, 0.0233536 + 0.0, -0.146354};
 
   //  2.98735 -0.312701 0.234717
   // 2.15991 -0.303712 0.337741
@@ -252,20 +94,8 @@ int main(int argc, char **argv) {
   // pcl::PointXYZ knownPoint3 = {2.15991, -0.303712, 0.337741};
   // pcl::PointXYZ knownPoint2 = {3.11331, -0.574892, 0.515388};
 
-  if (argc < 2) {
-    std::cout << "Please Enter pcd you want to analysis  e.g yam_data.pcd"
-              << std::endl;
-  }
-  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
-
-  if (pcl::io::loadPCDFile<pcl::PointXYZ>(argv[1], *cloud) ==
-      -1) //* load the file
-  {
-    PCL_ERROR("Couldn't read file test_pcd.pcd \n");
-    return (-1);
-  }
-  pcl::visualization::PCLVisualizer::Ptr viewer = shapesVis(cloud);
-  // test RRT
+  // pcl::visualization::PCLVisualizer::Ptr viewer = shapesVis(cloud);
+  //  test RRT
   pcl::KdTreeFLANN<pcl::PointXYZ> kdtree;
   kdtree.setInputCloud(cloud);
 
@@ -330,14 +160,15 @@ int main(int argc, char **argv) {
   for (Edge edge : v_edges) {
     std::stringstream ss;
     ss << "navigate_line" << index;
-    viewer->addLine<pcl::PointXYZ>((edge.p_point1), (edge.p_point2), ss.str());
+    // viewer->addLine<pcl::PointXYZ>((edge.p_point1), (edge.p_point2),
+    // ss.str());
     index++;
   }
   index = 1;
   for (pcl::PointXYZ p : *navigate_data1) {
     std::stringstream ss;
     ss << "PointNavigate" << index;
-    viewer->addSphere(p, 0.2 * ScaleFactor, 0.9, 0.2, 0.0, ss.str());
+    // viewer->addSphere(p, 0.2 * ScaleFactor, 0.9, 0.2, 0.0, ss.str());
     index++;
   }
 
@@ -368,24 +199,25 @@ int main(int argc, char **argv) {
   bfs.start();
 
   if (bfs.reached(get_random_node_from_RRT)) {
-    std::cout << nodeToPoint[get_random_node_from_RRT];
+    path_to_the_unknown.emplace_front(nodeToPoint[get_random_node_from_RRT]);
+    // std::cout << nodeToPoint[get_random_node_from_RRT];
     lemon::ListGraph::Node prev = bfs.predNode(get_random_node_from_RRT);
     while (prev != lemon::INVALID) {
-      std::cout << "<-" << nodeToPoint[prev];
+      // std::cout << "<-" << nodeToPoint[prev];
+      path_to_the_unknown.emplace_front(nodeToPoint[prev]);
       prev = bfs.predNode(prev);
 
       std::stringstream ss;
       ss << "PointNavigatePath" << index;
-      viewer->addSphere(nodeToPoint[prev], 0.2 * ScaleFactor, 0.1, 0.2, 0.9,
-                        ss.str());
+      // viewer->addSphere(nodeToPoint[prev], 0.2 * ScaleFactor, 0.1, 0.2, 0.9,
+      //                   ss.str());
       index++;
     }
-    std::cout << std::endl;
   }
 
-  viewer->addCoordinateSystem(1.0, navigate_starting_point.x,
-                              navigate_starting_point.y,
-                              navigate_starting_point.z);
+  // viewer->addCoordinateSystem(1.0, navigate_starting_point.x,
+  //                             navigate_starting_point.y,
+  //                             navigate_starting_point.z);
 
   // pcl::PointXYZ p_helper{0.0867836,0.031304,0.0313494};
   //  pcl::PointXYZ p_helper{0.152039, -0.112927,0.521806};
@@ -409,17 +241,74 @@ int main(int argc, char **argv) {
   // 0.5,
   //                   "SHPERE127asdfasDolevf");
 
-  pcl::PointXYZ knownPoint4 = {-0.264355 + 0.6, -0.105879 + 0.1, 0.166656};
-  viewer->addSphere(pcl::PointXYZ(0.320001, 0.028691, -0.409289),
-                    0.3 * ScaleFactor, 0.15, 0.5, 0.5, "SHPERE127asdfasDolevf");
-  viewer->addSphere(knownPoint4, 0.15 * ScaleFactor, 0.3, 0.5, 0.5,
-                    "SHPERE127asdfasDolevf1");
+  //  pcl::PointXYZ knownPoint4 = {-0.264355 + 0.6, -0.105879 + 0.1, 0.166656};
+  //  viewer->addSphere(pcl::PointXYZ(0.320001, 0.028691, -0.409289),
+  //                    0.3 * ScaleFactor, 0.15, 0.5, 0.5,
+  //                    "SHPERE127asdfasDolevf");
+  //  viewer->addSphere(knownPoint4, 0.15 * ScaleFactor, 0.3, 0.5, 0.5,
+  //                    "SHPERE127asdfasDolevf1");
+  // viewer->addSphere(knownPoint1, 0.5 * ScaleFactor, 1, 0, 0,
+  //                   "SHPERE127asdfasDolevf1");
 
+  // viewer->addSphere(knownPoint2, 0.5 * ScaleFactor, 0, 1, 0,
+  //                   "SHPERE127qsdfasDolevf1");
+
+  // viewer->addSphere(knownPoint3, 0.5 * ScaleFactor, 0, 0, 1,
+  //                   "SHPERE127aadfasDolevf1");
   //--------------------
   // -----Main loop-----
   //--------------------
-  while (!viewer->wasStopped()) {
-    viewer->spinOnce(100);
-    std::this_thread::sleep_for(100ms);
+  // If the Path is less than some magic number ie 10 than rerun
+  if (path_to_the_unknown.size() < 10) {
+    return;
   }
+  //  std::thread viewer_thread(
+  //      [=](pcl::visualization::PCLVisualizer::Ptr viewer) {
+  //        while (!viewer->wasStopped()) {
+  //          viewer->spinOnce(100);
+  //          std::this_thread::sleep_for(100ms);
+  //        }
+  //      },
+  //      viewer);
+  //  viewer_thread.detach();
+
+  // while (!viewer->wasStopped()) {
+  //   viewer->spinOnce(100);
+  //   std::this_thread::sleep_for(100ms);
+  // }
+}
+
+int main(int argc, char **argv) {
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
+
+  pcl::PointXYZ knownPoint1 = {0.114433, -0.0792644 + 0.0, 0.238077};
+  pcl::PointXYZ knownPoint2 = {0.0119525, -0.00770169 + 0.05, -0.0757213};
+  pcl::PointXYZ knownPoint3 = {0.548205, 0.0233536 + 0.0, -0.146354};
+  if (argc < 2) {
+    std::cout << "Please Enter pcd you want to analysis  e.g yam_data.pcd"
+              << std::endl;
+  }
+  if (pcl::io::loadPCDFile<pcl::PointXYZ>(argv[1], *cloud) ==
+      -1) //* load the file
+  {
+    PCL_ERROR("Couldn't read file test_pcd.pcd \n");
+    return -1;
+  }
+  std::list<pcl::PointXYZ> path_to_the_unknown;
+  while (path_to_the_unknown.size() < 10)
+    get_navigation_points(cloud, knownPoint1, knownPoint2, knownPoint3,
+                          path_to_the_unknown);
+  // std::thread visualize_the_path(visualizer_cloud_and_path, cloud,
+  //                                path_to_the_unknown);
+  // visualize_the_path.detach();
+  // visualizer_cloud_and_path(cloud, path_to_the_unknown);
+
+  for (auto point : path_to_the_unknown)
+    cout << point << "->";
+  while (true) {
+    std::cout << "barak"
+              << "\n";
+    sleep(3);
+  }
+  return 0;
 }
