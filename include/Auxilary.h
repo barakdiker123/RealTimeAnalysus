@@ -1,4 +1,5 @@
 
+#pragma once
 #include <pcl/common/common_headers.h>
 #include <pcl/console/parse.h>
 #include <pcl/features/normal_3d.h>

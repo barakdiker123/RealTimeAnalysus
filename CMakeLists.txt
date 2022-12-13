@@ -36,12 +36,18 @@ target_link_libraries(Auxilary PUBLIC ${PCL_LIBRARIES}
 
 
 
+add_library (get_navigation_point src/get_navigation_point.cpp)
+target_link_libraries (get_navigation_point PRIVATE ${PCL_LIBRARIES} Eigen3::Eigen)
+target_link_libraries(get_navigation_point PRIVATE ${LEMON_LIBRARIES})
+target_link_libraries(get_navigation_point PRIVATE Auxilary visualizer_cloud_and_path)
+target_include_directories(get_navigation_point PUBLIC include ${LEMON_INCLUDE_DIR})
 
 add_executable (visualize main.cpp)
 target_link_libraries (visualize PRIVATE ${PCL_LIBRARIES} Eigen3::Eigen)
 target_link_libraries(visualize PRIVATE ${LEMON_LIBRARIES})
 target_link_libraries(visualize PRIVATE Auxilary visualizer_cloud_and_path)
 target_include_directories(visualize PRIVATE include ${LEMON_INCLUDE_DIR})
+target_link_libraries(visualize PRIVATE get_navigation_point)
 
 
 add_executable(rebuildRRTTree src/rebuildRRTTree.cpp)
@@ -49,3 +55,5 @@ target_link_libraries (rebuildRRTTree PRIVATE ${LEMON_LIBRARIES} ${PCL_LIBRARIES
   Auxilary
   )
 target_include_directories( rebuildRRTTree PRIVATE include ${LEMON_INCLUDE_DIR})
+
+
