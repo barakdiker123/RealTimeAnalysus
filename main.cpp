@@ -1,6 +1,7 @@
 #include "lemon/core.h"
 #include "visualizer_cloud_and_path.hpp"
 #include <chrono>
+#include <fstream>
 #include <iostream>
 #include <lemon/bfs.h>
 #include <lemon/list_graph.h>
@@ -305,6 +306,14 @@ int main(int argc, char **argv) {
 
   for (auto point : path_to_the_unknown)
     cout << point << "->";
+  std::ofstream file_of_path_to_the_unknown;
+  file_of_path_to_the_unknown.open("drone_destinations1.txt");
+  for (auto point : path_to_the_unknown) {
+    file_of_path_to_the_unknown << point.x << " " << point.y << " " << point.z
+                                << "\n";
+  }
+  file_of_path_to_the_unknown.close();
+
   while (true) {
     std::cout << "barak"
               << "\n";
