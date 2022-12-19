@@ -55,5 +55,3 @@ target_link_libraries (rebuildRRTTree PRIVATE ${LEMON_LIBRARIES} ${PCL_LIBRARIES
   Auxilary
   )
 target_include_directories( rebuildRRTTree PRIVATE include ${LEMON_INCLUDE_DIR})
-
-
