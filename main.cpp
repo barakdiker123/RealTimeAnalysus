@@ -290,6 +290,7 @@ int main(int argc, char **argv) {
   pcl::PointXYZ knownPoint1 = {0.114433, -0.0792644 + 0.0, 0.238077};
   pcl::PointXYZ knownPoint2 = {0.0119525, -0.00770169 + 0.05, -0.0757213};
   pcl::PointXYZ knownPoint3 = {0.548205, 0.0233536 + 0.0, -0.146354};
+  pcl::PointXYZ StartPoint = {0.114433, -0.0792644 + 0.0, 0.238077};
   if (argc < 2) {
     std::cout << "Please Enter pcd you want to analysis  e.g yam_data.pcd"
               << std::endl;
@@ -302,8 +303,8 @@ int main(int argc, char **argv) {
   }
   std::list<pcl::PointXYZ> path_to_the_unknown;
   while (path_to_the_unknown.size() < 10)
-    get_navigation_points(cloud, knownPoint1, knownPoint2, knownPoint3,
-                          path_to_the_unknown);
+    get_navigation_points(cloud, StartPoint, knownPoint1, knownPoint2,
+                          knownPoint3, path_to_the_unknown);
   // std::thread visualize_the_path(visualizer_cloud_and_path, cloud,
   //                                path_to_the_unknown);
   // visualize_the_path.detach();
