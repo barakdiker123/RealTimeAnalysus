@@ -60,6 +60,9 @@ public:
       }
       how_many_times_until_change_scalefactor--;
     }
+    if (debug)
+      for (auto point : path_to_the_unknown)
+        cout << point << "->";
     return path_to_the_unknown;
   }
   /**
@@ -87,6 +90,9 @@ public:
       }
       how_many_times_until_change_scalefactor--;
     }
+    if (debug)
+      for (auto point : path_to_the_unknown)
+        cout << point << "->";
   }
   /**
    * @brief This function takes parameters and
