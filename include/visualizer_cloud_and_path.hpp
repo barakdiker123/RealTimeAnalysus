@@ -12,7 +12,7 @@
 
 void visualizer_cloud_and_path(
 
-    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud,
+    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, float ScaleFactor,
     std::list<pcl::PointXYZ> path_to_unknown
 
 );

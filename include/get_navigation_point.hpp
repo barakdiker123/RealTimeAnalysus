@@ -18,6 +18,8 @@
 #include <thread>
 
 void get_navigation_points(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud,
+                           pcl::PointXYZ navigate_starting_point,
                            pcl::PointXYZ knownPoint1, pcl::PointXYZ knownPoint2,
                            pcl::PointXYZ knownPoint3,
-                           std::list<pcl::PointXYZ> &path_to_the_unknown);
+                           std::list<pcl::PointXYZ> &path_to_the_unknown,
+                           float ScaleFactor);

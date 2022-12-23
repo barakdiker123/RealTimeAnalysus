@@ -7,7 +7,8 @@
 #include <pcl/visualization/pcl_visualizer.h>
 #include <random>
 
-const float ScaleFactor = 0.5;
+// const float ScaleFactor = 0.5;
+// float ScaleFactor;
 
 using namespace std::chrono_literals;
 
@@ -54,7 +55,8 @@ get_points_on_line(pcl::PointXYZ start, pcl::PointXYZ end, float jump_distance);
 
 bool is_valid_movement(pcl::PointCloud<pcl::PointXYZ>::ConstPtr cloud,
                        pcl::PointXYZ current_point, pcl::PointXYZ dest_point,
-                       pcl::KdTreeFLANN<pcl::PointXYZ> &kdtree);
+                       pcl::KdTreeFLANN<pcl::PointXYZ> &kdtree,
+                       float ScaleFactor);
 
 /**
  * @brief This function finds random point on plane

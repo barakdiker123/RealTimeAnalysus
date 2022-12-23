@@ -1,3 +1,4 @@
+#include "Auxilary.h"
 #include "get_navigation_point.hpp"
 //#include "lemon/core.h"
 #include "visualizer_cloud_and_path.hpp"
@@ -284,13 +285,22 @@ shapesVis(pcl::PointCloud<pcl::PointXYZ>::ConstPtr cloud) {
 //   // }
 // }
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv) { // TODO : Redo the point Enter !!!
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
 
-  pcl::PointXYZ knownPoint1 = {0.114433, -0.0792644 + 0.0, 0.238077};
-  pcl::PointXYZ knownPoint2 = {0.0119525, -0.00770169 + 0.05, -0.0757213};
-  pcl::PointXYZ knownPoint3 = {0.548205, 0.0233536 + 0.0, -0.146354};
-  pcl::PointXYZ StartPoint = {0.114433, -0.0792644 + 0.0, 0.238077};
+  // pcl::PointXYZ knownPoint1 = {-0.0832681, -0.0072334, -0.00888204};
+  // pcl::PointXYZ knownPoint2 = {-0.0763385, -0.0217067, 0.0981434};
+  // pcl::PointXYZ knownPoint3 = {0.0219548, -0.0286564, 0.105316};
+  // pcl::PointXYZ StartPoint = {0.0219548, -0.0286564, 0.105316};
+  pcl::PointXYZ knownPoint1 = {-0.0121305, -0.0730789, 0.517468};
+  pcl::PointXYZ knownPoint2 = {-0.0177447, -0.0546628, 0.334396};
+  pcl::PointXYZ knownPoint3 = {-0.134929, -0.0606948, 0.345245};
+  pcl::PointXYZ StartPoint = {-0.134929, -0.0606948, 0.345245};
+
+  //  pcl::PointXYZ knownPoint1 = {0.114433, -0.0792644 + 0.0, 0.238077};
+  //  pcl::PointXYZ knownPoint2 = {0.0119525, -0.00770169 + 0.05, -0.0757213};
+  //  pcl::PointXYZ knownPoint3 = {0.548205, 0.0233536 + 0.0, -0.146354};
+  //  pcl::PointXYZ StartPoint = {0.114433, -0.0792644 + 0.0, 0.238077};
   if (argc < 2) {
     std::cout << "Please Enter pcd you want to analysis  e.g yam_data.pcd"
               << std::endl;
@@ -301,10 +311,28 @@ int main(int argc, char **argv) {
     PCL_ERROR("Couldn't read file test_pcd.pcd \n");
     return -1;
   }
+  std::list<pcl::PointXYZ> path_to_the_unknown_test;
+  float ScaleFactor = 0.2;
+
+  // Testing !!
+  path_to_the_unknown_test.push_back(StartPoint);
+  path_to_the_unknown_test.push_back(knownPoint1);
+  path_to_the_unknown_test.push_back(knownPoint2);
+  path_to_the_unknown_test.push_back(knownPoint3);
+  visualizer_cloud_and_path(cloud, ScaleFactor, path_to_the_unknown_test);
+  // End Testing !!
   std::list<pcl::PointXYZ> path_to_the_unknown;
-  while (path_to_the_unknown.size() < 10)
+
+  while (path_to_the_unknown.size() < 10) {
+    static int how_many_times_until_change_scalefactor = 10;
     get_navigation_points(cloud, StartPoint, knownPoint1, knownPoint2,
-                          knownPoint3, path_to_the_unknown);
+                          knownPoint3, path_to_the_unknown, ScaleFactor);
+    if (how_many_times_until_change_scalefactor == 0) {
+      ScaleFactor = ScaleFactor * 0.9;
+      how_many_times_until_change_scalefactor = 10;
+    }
+    how_many_times_until_change_scalefactor--;
+  }
   // std::thread visualize_the_path(visualizer_cloud_and_path, cloud,
   //                                path_to_the_unknown);
   // visualize_the_path.detach();
@@ -319,6 +347,7 @@ int main(int argc, char **argv) {
                                 << "\n";
   }
   file_of_path_to_the_unknown.close();
+  visualizer_cloud_and_path(cloud, ScaleFactor, path_to_the_unknown);
 
   while (true) {
     std::cout << "barak"

@@ -1,15 +1,21 @@
 
 
 #include "get_navigation_point.hpp"
+#include "Auxilary.h"
+#include "lemon/core.h"
+#include "lemon/list_graph.h"
 
 bool operator==(const pcl::PointXYZ &lhs, const pcl::PointXYZ &rhs) {
   return lhs.x == rhs.x && lhs.y == rhs.y && rhs.z == lhs.z;
 }
 
 void get_navigation_points(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud,
+                           pcl::PointXYZ navigate_starting_point,
                            pcl::PointXYZ knownPoint1, pcl::PointXYZ knownPoint2,
                            pcl::PointXYZ knownPoint3,
-                           std::list<pcl::PointXYZ> &path_to_the_unknown) {
+                           std::list<pcl::PointXYZ> &path_to_the_unknown,
+                           float ScaleFactor) {
+
   lemon::ListGraph RRTGraph;
   lemon::ListGraph::NodeMap<pcl::PointXYZ> nodeToPoint(RRTGraph);
   // std::unordered_map<pcl::PointXYZ, lemon::ListGraph::Node> pointToNode;
@@ -35,8 +41,8 @@ void get_navigation_points(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud,
   pcl::KdTreeFLANN<pcl::PointXYZ> kdtree;
   kdtree.setInputCloud(cloud);
 
-  pcl::PointXYZ navigate_starting_point = {0.114433, -0.0792644 + 0.0,
-                                           0.238077};
+  // pcl::PointXYZ navigate_starting_point = {0.114433, -0.0792644 + 0.0,
+  //                                          0.238077};
   // navigate_starting_point.x = knownPoint1.x;
   // navigate_starting_point.y = knownPoint1.y;
   // navigate_starting_point.z = knownPoint1.z;
@@ -68,7 +74,7 @@ void get_navigation_points(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud,
               (sqrt((point_rand - (*navigate_data1)[v_closest_point1[0]]) *
                     (point_rand - (*navigate_data1)[v_closest_point1[0]])));
       if (is_valid_movement(cloud, (*navigate_data1)[v_closest_point1[0]],
-                            point_new, kdtree)) {
+                            point_new, kdtree, ScaleFactor)) {
         navigate_data1->push_back(point_new);
         Edge e = {point_new, (*navigate_data1)[v_closest_point1[0]]};
         v_edges.push_back(e);
@@ -112,6 +118,13 @@ void get_navigation_points(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud,
   std::cout << (*navigate_data1).size() << std::endl;
   for (pcl::PointXYZ p : *navigate_data1) {
     // std::cout << p.x << "," << p.y << "," << p.z;
+  }
+
+  // Checks whether the number of points in
+  // RRT Graph is Bigger than 3
+  // if so exit
+  if (lemon::countNodes(RRTGraph) < 50) {
+    return;
   }
 
   // Random Vertices from the RRTGraph!

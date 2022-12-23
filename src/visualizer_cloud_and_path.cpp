@@ -3,7 +3,7 @@
 
 void visualizer_cloud_and_path(
 
-    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud,
+    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, float ScaleFactor,
     std::list<pcl::PointXYZ> path_to_unknown
 
 ) {
@@ -22,8 +22,12 @@ void visualizer_cloud_and_path(
   for (auto &point : path_to_unknown) {
     std::stringstream ss;
     ss << "PointNavigatePath" << index;
-    viewer->addSphere(point, 0.2 * ScaleFactor, 0.1, 0.2, 0.9, ss.str());
+    viewer->addSphere(point, 0.25 * ScaleFactor, 0.1, 0.2, 0.9, ss.str());
     index++;
+  }
+  if (!path_to_unknown.empty()) {
+    viewer->addSphere(path_to_unknown.front(), 0.25 * ScaleFactor + 0.01, 0.9,
+                      0.2, 0.2, "Starting Point");
   }
 
   while (!viewer->wasStopped()) {

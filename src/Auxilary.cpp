@@ -105,7 +105,8 @@ std::vector<pcl::PointXYZ> get_points_on_line(pcl::PointXYZ start,
 
 bool is_valid_movement(pcl::PointCloud<pcl::PointXYZ>::ConstPtr cloud,
                        pcl::PointXYZ current_point, pcl::PointXYZ dest_point,
-                       pcl::KdTreeFLANN<pcl::PointXYZ> &kdtree) {
+                       pcl::KdTreeFLANN<pcl::PointXYZ> &kdtree,
+                       float ScaleFactor) {
   float jump_distance = 0.1 * ScaleFactor; // Magic number ?
   float radius_search = 0.25 * ScaleFactor;
   std::vector<pcl::PointXYZ> v_points_on_line =
