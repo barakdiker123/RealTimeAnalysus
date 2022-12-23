@@ -6,7 +6,7 @@
 
 * [Description](#description)
 * [Requirement](#requirement)
-* [Building The Project](#build-the-project)
+* [Building The Project](#building-the-project)
 * [Simple Example](#simple-example)
 * [Custom Installation](#custom-installation)
 *****
