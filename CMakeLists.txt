@@ -87,4 +87,4 @@ target_include_directories(ExportedTargetPathPlanning PRIVATE ${LEMON_INCLUDE_DI
 target_link_libraries(ExportedTargetPathPlanning PRIVATE get_navigation_point)
 target_include_directories(ExportedTargetPathPlanning PRIVATE ${PCL_INCLUDE_DIRS})
 target_link_directories(ExportedTargetPathPlanning PRIVATE ${PCL_LIBRARY_DIRS})
-target_include_directories(ExportedTargetPathPlanning PUBLIC include )
+target_include_directories(ExportedTargetPathPlanning PUBLIC "include" )
