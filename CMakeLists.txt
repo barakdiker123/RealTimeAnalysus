@@ -77,3 +77,13 @@ target_include_directories(rebuildRRTTree PRIVATE include ${LEMON_INCLUDE_DIR})
 target_include_directories(rebuildRRTTree PRIVATE ${PCL_INCLUDE_DIRS})
 target_link_directories(rebuildRRTTree PRIVATE ${PCL_LIBRARY_DIRS})
 #target_add_definitions(rebuildRRTTree PRIVATE ${PCL_DEFINITIONS})
+
+
+add_library (ExportedTargetPathPlanning exported_target_path_planning.cpp)
+target_link_libraries (ExportedTargetPathPlanning PRIVATE ${PCL_LIBRARIES} Eigen3::Eigen)
+target_link_libraries(ExportedTargetPathPlanning PRIVATE ${LEMON_LIBRARIES})
+target_link_libraries(ExportedTargetPathPlanning PRIVATE Auxilary visualizer_cloud_and_path)
+target_include_directories(ExportedTargetPathPlanning PRIVATE include ${LEMON_INCLUDE_DIR})
+target_link_libraries(ExportedTargetPathPlanning PRIVATE get_navigation_point)
+target_include_directories(ExportedTargetPathPlanning PRIVATE ${PCL_INCLUDE_DIRS})
+target_link_directories(ExportedTargetPathPlanning PRIVATE ${PCL_LIBRARY_DIRS})
