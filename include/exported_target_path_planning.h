@@ -17,6 +17,7 @@
 //#include <pcl/features/normal_3d.h>
 //#include <pcl/io/pcd_io.h>
 //#include <pcl/visualization/pcl_visualizer.h>
+#include <cstddef>
 #include <random>
 #include <sstream>
 #include <thread>
@@ -25,8 +26,8 @@ class PathBuilder {
 private:
   float ScaleFactor = 0.2;
   float byHowMuchChangeScaleFactor = 0.1;
-  int howManyTimesTriesEachScaleFactor = 10;
-  int howLongIsAValidPath = 10;
+  std::size_t howManyTimesTriesEachScaleFactor = 10;
+  std::size_t howLongIsAValidPath = 10;
   bool debug = true;
 
 public:
