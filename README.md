@@ -91,7 +91,7 @@ int main(){
   pcl::PointXYZ knownPoint3 = {-0.134929, -0.0606948, 0.345245};
   pcl::PointXYZ StartPoint = {-0.134929, -0.0606948, 0.345245};
   PathBuilder pb();
-  std::list path_outside_known_list =           pb(cloud,StartingPoint,knownPoint1,knownPoint2,knownPoint3)
+  std::list path_outside_known_list = pb(cloud,StartingPoint,knownPoint1,knownPoint2,knownPoint3)
   //Go To Those Point on the List for further exploration !!!
 }
 ```
