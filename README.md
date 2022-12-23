@@ -10,11 +10,12 @@
 * [Simple Example](#simple-example)
 * [Custom Installation](#custom-installation)
 *****
+
+![Colored RRT](pictures/PictureRRTColor.png)
 ## Description 
 
 In this project the goal is to find a path to the unknown or explored 
 territory of a PointCloud model/map
-![Colored RRT](pictures/PictureRRTColor.png)
 ![No Color Picture](pictures/PictureRRT1.png)
 ![More No Color Picture](pictures/PictureRRT2.png)
 
