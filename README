@@ -1,7 +1,0 @@
-  * [ ] 
-
-
-cmake -DLEMON_DIR=/Users/barakdiker/custom_install_app/usr/local/share/lemon/cmake ../
-
-
-cmake -DQt5_DIR=/opt/homebrew/opt/qt@5/lib/cmake/Qt5 ../
