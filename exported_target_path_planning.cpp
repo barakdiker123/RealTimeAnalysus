@@ -29,31 +29,32 @@
  * @param knownPoint1[in] -> Points needed for creating the plane for RRT
  * @returns path_to_the_unknown[out] -> The returned path to the unknown
  * */
-std::list<pcl::PointXYZ> PathBuilder::operator()(
-    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, pcl::PointXYZ StartPoint,
-    pcl::PointXYZ knownPoint1, pcl::PointXYZ knownPoint2,
-    pcl::PointXYZ knownPoint3
+std::list<pcl::PointXYZ>
+PathBuilder::operator()(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud,
+                        pcl::PointXYZ StartPoint, pcl::PointXYZ knownPoint1,
+                        pcl::PointXYZ knownPoint2, pcl::PointXYZ knownPoint3
 
 ) {
-    std::list<pcl::PointXYZ> path_to_the_unknown;
+  std::list<pcl::PointXYZ> path_to_the_unknown;
 
-    while (path_to_the_unknown.size() < howLongIsAValidPath) {
-        static int how_many_times_until_change_scalefactor =
-            howManyTimesTriesEachScaleFactor;
-        get_navigation_points(cloud, StartPoint, knownPoint1, knownPoint2,
-                              knownPoint3, path_to_the_unknown, ScaleFactor);
-        if (how_many_times_until_change_scalefactor == 0) {
-            ScaleFactor = ScaleFactor * (1 - byHowMuchChangeScaleFactor);
-            how_many_times_until_change_scalefactor =
-                howManyTimesTriesEachScaleFactor;
-        }
-        how_many_times_until_change_scalefactor--;
+  while (path_to_the_unknown.size() < howLongIsAValidPath) {
+    static int how_many_times_until_change_scalefactor =
+        howManyTimesTriesEachScaleFactor;
+    path_to_the_unknown.clear();
+    get_navigation_points(cloud, StartPoint, knownPoint1, knownPoint2,
+                          knownPoint3, path_to_the_unknown, ScaleFactor);
+    if (how_many_times_until_change_scalefactor == 0) {
+      ScaleFactor = ScaleFactor * (1 - byHowMuchChangeScaleFactor);
+      how_many_times_until_change_scalefactor =
+          howManyTimesTriesEachScaleFactor;
     }
-    if (debug)
-        for (auto point : path_to_the_unknown) {
-            std::cout << point.x << " " << point.y << " " << point.z << "->";
-        }
-    return path_to_the_unknown;
+    how_many_times_until_change_scalefactor--;
+  }
+  if (debug)
+    for (auto point : path_to_the_unknown) {
+      std::cout << point.x << " " << point.y << " " << point.z << "->";
+    }
+  return path_to_the_unknown;
 }
 /**
  * @brief This function takes parameters and
@@ -70,22 +71,23 @@ void PathBuilder::operator()(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud,
                              pcl::PointXYZ knownPoint2,
                              pcl::PointXYZ knownPoint3,
                              std::list<pcl::PointXYZ> &path_to_the_unknown) {
-    while (path_to_the_unknown.size() < howLongIsAValidPath) {
-        static int how_many_times_until_change_scalefactor =
-            howManyTimesTriesEachScaleFactor;
-        get_navigation_points(cloud, StartPoint, knownPoint1, knownPoint2,
-                              knownPoint3, path_to_the_unknown, ScaleFactor);
-        if (how_many_times_until_change_scalefactor == 0) {
-            ScaleFactor = ScaleFactor * (1 - byHowMuchChangeScaleFactor);
-            how_many_times_until_change_scalefactor =
-                howManyTimesTriesEachScaleFactor;
-        }
-        how_many_times_until_change_scalefactor--;
+  while (path_to_the_unknown.size() < howLongIsAValidPath) {
+    static int how_many_times_until_change_scalefactor =
+        howManyTimesTriesEachScaleFactor;
+    path_to_the_unknown.clear();
+    get_navigation_points(cloud, StartPoint, knownPoint1, knownPoint2,
+                          knownPoint3, path_to_the_unknown, ScaleFactor);
+    if (how_many_times_until_change_scalefactor == 0) {
+      ScaleFactor = ScaleFactor * (1 - byHowMuchChangeScaleFactor);
+      how_many_times_until_change_scalefactor =
+          howManyTimesTriesEachScaleFactor;
     }
-    if (debug)
-        for (auto point : path_to_the_unknown) {
-            std::cout << point.x << " " << point.y << " " << point.z << "->";
-        }
+    how_many_times_until_change_scalefactor--;
+  }
+  if (debug)
+    for (auto point : path_to_the_unknown) {
+      std::cout << point.x << " " << point.y << " " << point.z << "->";
+    }
 }
 /**
  * @brief This function takes parameters and
@@ -103,28 +105,29 @@ void PathBuilder::operator()(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud,
                              pcl::PointXYZ knownPoint2,
                              pcl::PointXYZ knownPoint3,
                              std::string location_file_path_to_the_unknown) {
-    std::list<pcl::PointXYZ> path_to_the_unknown;
-    while (path_to_the_unknown.size() < howLongIsAValidPath) {
-        static int how_many_times_until_change_scalefactor =
-            howManyTimesTriesEachScaleFactor;
-        get_navigation_points(cloud, StartPoint, knownPoint1, knownPoint2,
-                              knownPoint3, path_to_the_unknown, ScaleFactor);
-        if (how_many_times_until_change_scalefactor == 0) {
-            ScaleFactor = ScaleFactor * (1 - byHowMuchChangeScaleFactor);
-            how_many_times_until_change_scalefactor =
-                howManyTimesTriesEachScaleFactor;
-        }
-        how_many_times_until_change_scalefactor--;
+  std::list<pcl::PointXYZ> path_to_the_unknown;
+  while (path_to_the_unknown.size() < howLongIsAValidPath) {
+    static int how_many_times_until_change_scalefactor =
+        howManyTimesTriesEachScaleFactor;
+    path_to_the_unknown.clear();
+    get_navigation_points(cloud, StartPoint, knownPoint1, knownPoint2,
+                          knownPoint3, path_to_the_unknown, ScaleFactor);
+    if (how_many_times_until_change_scalefactor == 0) {
+      ScaleFactor = ScaleFactor * (1 - byHowMuchChangeScaleFactor);
+      how_many_times_until_change_scalefactor =
+          howManyTimesTriesEachScaleFactor;
     }
-    if (debug)
-        for (auto point : path_to_the_unknown)
-            cout << point.x << point.y << point.z << "->";
-    std::ofstream file_of_path_to_the_unknown;
-    // file_of_path_to_the_unknown.open("drone_destinations1.txt");
-    file_of_path_to_the_unknown.open(location_file_path_to_the_unknown.c_str());
-    for (auto point : path_to_the_unknown) {
-        file_of_path_to_the_unknown << point.x << " " << point.y << " "
-                                    << point.z << "\n";
-    }
-    file_of_path_to_the_unknown.close();
+    how_many_times_until_change_scalefactor--;
+  }
+  if (debug)
+    for (auto point : path_to_the_unknown)
+      cout << point.x << point.y << point.z << "->";
+  std::ofstream file_of_path_to_the_unknown;
+  // file_of_path_to_the_unknown.open("drone_destinations1.txt");
+  file_of_path_to_the_unknown.open(location_file_path_to_the_unknown.c_str());
+  for (auto point : path_to_the_unknown) {
+    file_of_path_to_the_unknown << point.x << " " << point.y << " " << point.z
+                                << "\n";
+  }
+  file_of_path_to_the_unknown.close();
 }

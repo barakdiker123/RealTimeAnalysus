@@ -1,0 +1,5 @@
+
+
+
+add_executable(simple_visualize_test simple_visualize_test.cpp)
+target_link_libraries(simple_visualize_test PRIVATE ExportedTargetPathPlanning)

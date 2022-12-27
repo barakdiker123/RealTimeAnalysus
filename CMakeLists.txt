@@ -81,10 +81,13 @@ target_link_directories(rebuildRRTTree PRIVATE ${PCL_LIBRARY_DIRS})
 
 add_library (ExportedTargetPathPlanning exported_target_path_planning.cpp)
 target_link_libraries (ExportedTargetPathPlanning PUBLIC ${PCL_LIBRARIES} Eigen3::Eigen)
-target_link_libraries(ExportedTargetPathPlanning PRIVATE ${LEMON_LIBRARIES})
+target_link_libraries(ExportedTargetPathPlanning PUBLIC ${LEMON_LIBRARIES})
 target_link_libraries(ExportedTargetPathPlanning PRIVATE Auxilary visualizer_cloud_and_path)
-target_include_directories(ExportedTargetPathPlanning PRIVATE ${LEMON_INCLUDE_DIR})
+target_include_directories(ExportedTargetPathPlanning PUBLIC ${LEMON_INCLUDE_DIR})
 target_link_libraries(ExportedTargetPathPlanning PRIVATE get_navigation_point)
 target_include_directories(ExportedTargetPathPlanning PUBLIC ${PCL_INCLUDE_DIRS})
 target_link_directories(ExportedTargetPathPlanning PUBLIC ${PCL_LIBRARY_DIRS})
 target_include_directories(ExportedTargetPathPlanning PUBLIC "include" )
+
+#For more visualize testing add this subdirectory
+add_subdirectory(tests)
