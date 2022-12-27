@@ -5,6 +5,7 @@
 #include <pcl/features/normal_3d.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/visualization/pcl_visualizer.h>
+
 #include <random>
 
 // const float ScaleFactor = 0.5;
@@ -13,8 +14,8 @@
 using namespace std::chrono_literals;
 
 struct Edge {
-  pcl::PointXYZ p_point1;
-  pcl::PointXYZ p_point2;
+    pcl::PointXYZ p_point1;
+    pcl::PointXYZ p_point2;
 };
 
 int radiusSearch(pcl::PointCloud<pcl::PointXYZ>::ConstPtr cloud,
@@ -50,8 +51,9 @@ pcl::PointXYZ operator+(pcl::PointXYZ p1, pcl::PointXYZ p2);
  * @param float jump_distance -> sets the minimum distance of the point on line
  * @return -> all points on line with distance at least @var jump_distance
  */
-std::vector<pcl::PointXYZ>
-get_points_on_line(pcl::PointXYZ start, pcl::PointXYZ end, float jump_distance);
+std::vector<pcl::PointXYZ> get_points_on_line(pcl::PointXYZ start,
+                                              pcl::PointXYZ end,
+                                              float jump_distance);
 
 bool is_valid_movement(pcl::PointCloud<pcl::PointXYZ>::ConstPtr cloud,
                        pcl::PointXYZ current_point, pcl::PointXYZ dest_point,
@@ -72,3 +74,5 @@ bool is_valid_movement(pcl::PointCloud<pcl::PointXYZ>::ConstPtr cloud,
 pcl::PointXYZ getRandomPointOnPlaneDefBy3Points(pcl::PointXYZ point1,
                                                 pcl::PointXYZ point2,
                                                 pcl::PointXYZ point3);
+
+void crossProduct(pcl::PointXYZ v_A, pcl::PointXYZ v_B, pcl::PointXYZ &c_P);
