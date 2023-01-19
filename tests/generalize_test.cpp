@@ -14,9 +14,9 @@ pcl::PointXYZ getCenterOfMass(pcl::PointCloud<pcl::PointXYZ> cloud) {
   return center_of_mass_point;
 }
 
-void open_and_display_run(int index) {
+void open_and_display_run(int index, float ScaleFactor = 0.5) {
   std::stringstream ss;
-  ss << BUILD_DIR;
+  ss << SOURCE_DIR;
   ss << "/pcd_test_data"
      << "/"
      << "pointData";
@@ -30,13 +30,42 @@ void open_and_display_run(int index) {
   } else {
     std::cout << "File has been found " << index << std::endl;
   }
+
+  pcl::PointXYZ StartPoint = {-0.153138, -0.122093, 0.584504};
+  pcl::PointXYZ knownPoint1 = {-0.153138, -0.122093, 0.584504};
+  pcl::PointXYZ knownPoint2 = {-0.285441, -0.122198, 0.575664};
+  pcl::PointXYZ knownPoint3 = {-0.0994426, -0.0767678, 0.319785};
+  pcl::PointXYZ vertical;
+
+  // crossProduct(knownPoint1 - knownPoint2, knownPoint1 - knownPoint3,
+  // vertical);
+  //  float alpha = -3;
+  //  knownPoint1 = knownPoint1 + alpha * vertical;
+  //  knownPoint2 = knownPoint2 + alpha * vertical;
+  //  knownPoint3 = knownPoint3 + alpha * vertical;
+  //  std::cout << vertical << "\n";
+
+  std::list<pcl::PointXYZ> path_to_the_unknown_test;
+  PathBuilder pb(ScaleFactor);
+
+  path_to_the_unknown_test =
+      pb(cloud, StartPoint, knownPoint1, knownPoint2, knownPoint3);
+  for (auto point : path_to_the_unknown_test)
+    std::cout << point << "->";
+  visualizer_cloud_and_path(cloud, pb.ScaleFactor, path_to_the_unknown_test);
 }
 
-int main() {
-  for (int i = 0; i < 11; i++)
-    open_and_display_run(i);
-}
+int main(int argc, char **argv) {
 
-// #cmakedefine BUILD_DIR @BUILD_DIR@
-// set(BUILD_DIR \"${CMAKE_CURRENT_SOURCE_DIR}\")
-// configure_file(PathConfig.h.in PathConfig.h)
+  std::cout << "If you want to change ScaleFactor you should run like this : "
+               "./generalize_test [ScaleFactor between 0.1 to 1] \n  "
+               "default value is 0.5"
+            << std::endl;
+  std::cout << "Press q to continue to next simulation " << std::endl;
+  if (argc == 1)
+    for (int i = 0; i < 11; i++)
+      open_and_display_run(i);
+  else
+    for (int i = 0; i < 11; i++)
+      open_and_display_run(i, std::stof(argv[1]));
+}

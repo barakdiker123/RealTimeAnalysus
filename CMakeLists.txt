@@ -21,6 +21,7 @@ set(THREADS_PREFER_PTHREAD_FLAG ON)
 endif()
 
  set(BUILD_DIR ${CMAKE_BINARY_DIR})
+ set(SOURCE_DIR ${CMAKE_SOURCE_DIR})
  configure_file(config.h.in config.h)
 
 

@@ -1,3 +1,4 @@
 
 //#cmakedefine BUILD_DIR "@BUILD_DIR@" // NOLINT
-#define BUILD_DIR "@BUILD_DIR@" // NOLINT
+#define BUILD_DIR "@BUILD_DIR@"   // NOLINT
+#define SOURCE_DIR "@SOURCE_DIR@" // NOLINT
