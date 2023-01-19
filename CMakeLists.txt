@@ -20,6 +20,8 @@ set(CMAKE_USE_PTHREADS_INIT 1)
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 endif()
 
+ set(BUILD_DIR ${CMAKE_BINARY_DIR})
+ configure_file(config.h.in config.h)
 
 
 #add_executable (example main.cpp)
@@ -79,7 +81,7 @@ target_link_directories(rebuildRRTTree PRIVATE ${PCL_LIBRARY_DIRS})
 #target_add_definitions(rebuildRRTTree PRIVATE ${PCL_DEFINITIONS})
 
 
-add_library (ExportedTargetPathPlanning exported_target_path_planning.cpp)
+add_library (ExportedTargetPathPlanning src/exported_target_path_planning.cpp)
 target_link_libraries (ExportedTargetPathPlanning PUBLIC ${PCL_LIBRARIES} Eigen3::Eigen)
 target_link_libraries(ExportedTargetPathPlanning PUBLIC ${LEMON_LIBRARIES})
 target_link_libraries(ExportedTargetPathPlanning PRIVATE Auxilary visualizer_cloud_and_path)

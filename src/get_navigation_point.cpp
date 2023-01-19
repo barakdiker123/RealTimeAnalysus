@@ -12,10 +12,10 @@ bool operator==(const pcl::PointXYZ &lhs, const pcl::PointXYZ &rhs) {
 void get_navigation_points(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud,
                            pcl::PointXYZ navigate_starting_point,
                            pcl::PointXYZ knownPoint1, pcl::PointXYZ knownPoint2,
-                           pcl::PointXYZ knownPoint3,
+                           pcl::PointXYZ knownPoint3, float ScaleFactor,
                            std::list<pcl::PointXYZ> &path_to_the_unknown,
-                           float ScaleFactor) {
-
+                           std::vector<Edge> &v_edges,
+                           pcl::PointCloud<pcl::PointXYZ>::Ptr RRTCloud) {
   lemon::ListGraph RRTGraph;
   lemon::ListGraph::NodeMap<pcl::PointXYZ> nodeToPoint(RRTGraph);
   // std::unordered_map<pcl::PointXYZ, lemon::ListGraph::Node> pointToNode;
@@ -46,10 +46,10 @@ void get_navigation_points(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud,
   // navigate_starting_point.x = knownPoint1.x;
   // navigate_starting_point.y = knownPoint1.y;
   // navigate_starting_point.z = knownPoint1.z;
-  std::vector<Edge> v_edges;
-  pcl::PointCloud<pcl::PointXYZ>::Ptr navigate_data1(
-      new pcl::PointCloud<pcl::PointXYZ>);
-  navigate_data1->push_back(navigate_starting_point);
+  //  std::vector<Edge> v_edges;
+  //  pcl::PointCloud<pcl::PointXYZ>::Ptr RRTCloud(
+  //      new pcl::PointCloud<pcl::PointXYZ>);
+  RRTCloud->push_back(navigate_starting_point);
   lemon::ListGraph::Node firstNode = RRTGraph.addNode();
   nodeToPoint[firstNode] = navigate_starting_point;
 
@@ -63,20 +63,20 @@ void get_navigation_points(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud,
     pcl::PointXYZ point_rand = getRandomPointOnPlaneDefBy3Points(
         knownPoint1, knownPoint2, knownPoint3);
     pcl::KdTreeFLANN<pcl::PointXYZ> navigate_tree1;
-    navigate_tree1.setInputCloud(navigate_data1);
+    navigate_tree1.setInputCloud(RRTCloud);
     std::vector<int> v_closest_point1(1);
     std::vector<float> v_dist_closest_point1(1);
     if (navigate_tree1.nearestKSearch(point_rand, 1, v_closest_point1,
                                       v_dist_closest_point1)) {
       pcl::PointXYZ point_new =
-          (*navigate_data1)[v_closest_point1[0]] +
-          jump * (point_rand - (*navigate_data1)[v_closest_point1[0]]) /
-              (sqrt((point_rand - (*navigate_data1)[v_closest_point1[0]]) *
-                    (point_rand - (*navigate_data1)[v_closest_point1[0]])));
-      if (is_valid_movement(cloud, (*navigate_data1)[v_closest_point1[0]],
-                            point_new, kdtree, ScaleFactor)) {
-        navigate_data1->push_back(point_new);
-        Edge e = {point_new, (*navigate_data1)[v_closest_point1[0]]};
+          (*RRTCloud)[v_closest_point1[0]] +
+          jump * (point_rand - (*RRTCloud)[v_closest_point1[0]]) /
+              (sqrt((point_rand - (*RRTCloud)[v_closest_point1[0]]) *
+                    (point_rand - (*RRTCloud)[v_closest_point1[0]])));
+      if (is_valid_movement(cloud, (*RRTCloud)[v_closest_point1[0]], point_new,
+                            kdtree, ScaleFactor)) {
+        RRTCloud->push_back(point_new);
+        Edge e = {point_new, (*RRTCloud)[v_closest_point1[0]]};
         v_edges.push_back(e);
 
         lemon::ListGraph::Node newNode = RRTGraph.addNode();
@@ -86,7 +86,7 @@ void get_navigation_points(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud,
         lemon::ListGraph::Node closestPointInRRT;
         for (lemon::ListGraph::NodeIt it(RRTGraph); it != lemon::INVALID;
              ++it) {
-          if (nodeToPoint[it] == (*navigate_data1)[v_closest_point1[0]]) {
+          if (nodeToPoint[it] == (*RRTCloud)[v_closest_point1[0]]) {
             closestPointInRRT = it;
           }
         }
@@ -107,7 +107,7 @@ void get_navigation_points(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud,
     index++;
   }
   index = 1;
-  for (pcl::PointXYZ p : *navigate_data1) {
+  for (pcl::PointXYZ p : *RRTCloud) {
     std::stringstream ss;
     ss << "PointNavigate" << index;
     // viewer->addSphere(p, 0.2 * ScaleFactor, 0.9, 0.2, 0.0, ss.str());
@@ -115,8 +115,8 @@ void get_navigation_points(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud,
   }
 
   std::cout << v_edges.size() << std::endl;
-  std::cout << (*navigate_data1).size() << std::endl;
-  for (pcl::PointXYZ p : *navigate_data1) {
+  std::cout << (*RRTCloud).size() << std::endl;
+  for (pcl::PointXYZ p : *RRTCloud) {
     // std::cout << p.x << "," << p.y << "," << p.z;
   }
 

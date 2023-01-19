@@ -324,9 +324,16 @@ int main(int argc, char **argv) { // TODO : Redo the point Enter !!!
   std::list<pcl::PointXYZ> path_to_the_unknown;
 
   while (path_to_the_unknown.size() < 10) {
+
     static int how_many_times_until_change_scalefactor = 10;
+    std::vector<Edge> v_edges;
+    pcl::PointCloud<pcl::PointXYZ>::Ptr RRTCloud(
+        new pcl::PointCloud<pcl::PointXYZ>);
     get_navigation_points(cloud, StartPoint, knownPoint1, knownPoint2,
-                          knownPoint3, path_to_the_unknown, ScaleFactor);
+                          knownPoint3, ScaleFactor, path_to_the_unknown,
+                          v_edges, RRTCloud);
+    // std::vector<Edge> &v_edges,
+    // pcl::PointCloud<pcl::PointXYZ>::Ptr RRTCloud);
     if (how_many_times_until_change_scalefactor == 0) {
       ScaleFactor = ScaleFactor * 0.9;
       how_many_times_until_change_scalefactor = 10;

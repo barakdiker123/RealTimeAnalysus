@@ -3,3 +3,8 @@
 
 add_executable(simple_visualize_test simple_visualize_test.cpp)
 target_link_libraries(simple_visualize_test PRIVATE ExportedTargetPathPlanning)
+target_include_directories(simple_visualize_test PRIVATE ${CMAKE_BINARY_DIR})
+
+add_executable(generalize_test generalize_test.cpp)
+target_link_libraries(generalize_test PRIVATE ExportedTargetPathPlanning)
+target_include_directories(generalize_test PRIVATE ${CMAKE_BINARY_DIR})

@@ -24,7 +24,7 @@
 
 class PathBuilder {
 private:
-  float ScaleFactor = 0.2;
+  float ScaleFactor = 0.5;
   float byHowMuchChangeScaleFactor = 0.1;
   std::size_t howManyTimesTriesEachScaleFactor = 10;
   std::size_t howLongIsAValidPath = 10;
