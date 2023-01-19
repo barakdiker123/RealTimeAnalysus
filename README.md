@@ -9,6 +9,7 @@
 * [Building The Project](#building-the-project)
 * [Simple Example](#simple-example)
 * [Custom Installation](#custom-installation)
+* [Running The Demo](#running-the-demo)
 *****
 
 ![Colored RRT](pictures/PictureRRTColor.png)
@@ -45,6 +46,42 @@ mkdir build
 cmake ../
 cmake --build . -j{number of cores -1 }
 ```
+
+## Running The Demo 
+For Running the demo build as instructed above , and use the following commands
+
+```
+cd build
+cd tests
+./generalized_test
+```
+To continue to next simulation click `q`
+if you want to change to a bigger scalefactor do
+
+``` 
+./generalized_test 0.7
+```
+It'll set ScaleFactor to 0.7
+
+*****
+For running on special pcd file use the following commands
+
+```
+cd build
+cd tests
+./simple_visualize_test [Path_To_pcd_file]
+./simple_visualize_test ../a20m12.pcd
+```
+
+and also will work this 
+
+```
+cd build
+cd tests
+./simple_visualize_test [Path_To_pcd_file] [ScaleFactor]
+./simple_visualize_test ../a20m12.pcd 0.6
+```
+
 
 *****
 
