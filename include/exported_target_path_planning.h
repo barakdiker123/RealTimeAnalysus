@@ -31,8 +31,16 @@ private:
 
 public:
   float ScaleFactor = 0.5;
-  PathBuilder(float ScaleFactor) : ScaleFactor(ScaleFactor) {}
-  PathBuilder() {}
+  std::vector<Edge> v_edges;
+  pcl::PointCloud<pcl::PointXYZ>::Ptr RRTCloud;
+  PathBuilder(float ScaleFactor) : ScaleFactor(ScaleFactor) {
+    RRTCloud.reset(new pcl::PointCloud<pcl::PointXYZ>);
+    v_edges.clear();
+  }
+  PathBuilder() {
+    RRTCloud.reset(new pcl::PointCloud<pcl::PointXYZ>);
+    v_edges.clear();
+  }
   /**
    * @brief This function takes parameters and
    * return the path to the unknown via path_to_the_unknown

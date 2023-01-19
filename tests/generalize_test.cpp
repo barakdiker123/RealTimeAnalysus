@@ -4,6 +4,8 @@
 #include "exported_target_path_planning.h"
 #include "visualizer_cloud_and_path.hpp"
 #include <iostream>
+#include <memory>
+#include <mutex>
 
 pcl::PointXYZ getCenterOfMass(pcl::PointCloud<pcl::PointXYZ> cloud) {
   pcl::PointXYZ center_of_mass_point = {0, 0, 0};
@@ -52,7 +54,15 @@ void open_and_display_run(int index, float ScaleFactor = 0.5) {
       pb(cloud, StartPoint, knownPoint1, knownPoint2, knownPoint3);
   for (auto point : path_to_the_unknown_test)
     std::cout << point << "->";
-  visualizer_cloud_and_path(cloud, pb.ScaleFactor, path_to_the_unknown_test);
+  // visualizer_cloud_and_path(cloud, pb.ScaleFactor, path_to_the_unknown_test);
+
+  std::unique_ptr<Visualized> vis = std::make_unique<Visualized>();
+  vis->set_scale_factor(pb.ScaleFactor)
+      .set_RRTCloud(pb.RRTCloud)
+      .set_cloud(cloud)
+      .set_edges(pb.v_edges)
+      .set_path(path_to_the_unknown_test);
+  vis->run();
 }
 
 int main(int argc, char **argv) {

@@ -13,36 +13,36 @@
 int radiusSearch(pcl::PointCloud<pcl::PointXYZ>::ConstPtr cloud,
                  pcl::PointXYZ searchPoint, float radius,
                  pcl::KdTreeFLANN<pcl::PointXYZ> &kdtree) {
-    // pcl::KdTreeFLANN<pcl::PointXYZ> kdtree;
-    // kdtree.setInputCloud(cloud);
-    //  Neighbors within radius search
-    std::vector<int> pointIdxRadiusSearch;
-    std::vector<float> pointRadiusSquaredDistance;
-    return kdtree.radiusSearch(searchPoint, radius, pointIdxRadiusSearch,
-                               pointRadiusSquaredDistance);
+  // pcl::KdTreeFLANN<pcl::PointXYZ> kdtree;
+  // kdtree.setInputCloud(cloud);
+  //  Neighbors within radius search
+  std::vector<int> pointIdxRadiusSearch;
+  std::vector<float> pointRadiusSquaredDistance;
+  return kdtree.radiusSearch(searchPoint, radius, pointIdxRadiusSearch,
+                             pointRadiusSquaredDistance);
 }
 pcl::PointXYZ operator-(pcl::PointXYZ p1, pcl::PointXYZ p2) {
-    pcl::PointXYZ p3;
-    p3.x = p1.x - p2.x;
-    p3.y = p1.y - p2.y;
-    p3.z = p1.z - p2.z;
-    return p3;
+  pcl::PointXYZ p3;
+  p3.x = p1.x - p2.x;
+  p3.y = p1.y - p2.y;
+  p3.z = p1.z - p2.z;
+  return p3;
 }
 float norm(pcl::PointXYZ p1) {
-    return sqrt(p1.x * p1.x + p1.y * p1.y + p1.z * p1.z);
+  return sqrt(p1.x * p1.x + p1.y * p1.y + p1.z * p1.z);
 }
 pcl::PointXYZ operator/(pcl::PointXYZ p1, float d) {
-    pcl::PointXYZ p3;
-    if (d == 0) {
-        p3.x = p1.x;
-        p3.y = p1.y;
-        p3.z = p1.z;
-        return p3;
-    }
-    p3.x = p1.x / d;
-    p3.y = p1.y / d;
-    p3.z = p1.z / d;
+  pcl::PointXYZ p3;
+  if (d == 0) {
+    p3.x = p1.x;
+    p3.y = p1.y;
+    p3.z = p1.z;
     return p3;
+  }
+  p3.x = p1.x / d;
+  p3.y = p1.y / d;
+  p3.z = p1.z / d;
+  return p3;
 }
 /**
  * @brief copy point1 to point2
@@ -51,9 +51,9 @@ pcl::PointXYZ operator/(pcl::PointXYZ p1, float d) {
  * @return -> None
  */
 void copy(pcl::PointXYZ &point1, pcl::PointXYZ &point2) {
-    point2.x = point1.x;
-    point2.y = point1.y;
-    point2.z = point1.z;
+  point2.x = point1.x;
+  point2.y = point1.y;
+  point2.z = point1.z;
 }
 /**
  * @brief Given 2 vectors of size 3*1 and 3*1
@@ -63,17 +63,17 @@ void copy(pcl::PointXYZ &point1, pcl::PointXYZ &point2) {
  * @return float -> The matrix mul (1*3)*(3*1)
  */
 float operator*(pcl::PointXYZ p1, pcl::PointXYZ p2) {
-    return p1.x * p2.x + p1.y * p2.y + p1.z * p2.z;
+  return p1.x * p2.x + p1.y * p2.y + p1.z * p2.z;
 }
 pcl::PointXYZ operator*(pcl::PointXYZ p1, float a) {
-    return pcl::PointXYZ(p1.x * a, p1.y * a, p1.z * a);
+  return pcl::PointXYZ(p1.x * a, p1.y * a, p1.z * a);
 }
 
 pcl::PointXYZ operator*(float a, pcl::PointXYZ p1) {
-    return pcl::PointXYZ(p1.x * a, p1.y * a, p1.z * a);
+  return pcl::PointXYZ(p1.x * a, p1.y * a, p1.z * a);
 }
 pcl::PointXYZ operator+(pcl::PointXYZ p1, pcl::PointXYZ p2) {
-    return pcl::PointXYZ(p1.x + p2.x, p1.y + p2.y, p1.z + p2.z);
+  return pcl::PointXYZ(p1.x + p2.x, p1.y + p2.y, p1.z + p2.z);
 }
 
 /**
@@ -89,36 +89,36 @@ pcl::PointXYZ operator+(pcl::PointXYZ p1, pcl::PointXYZ p2) {
 std::vector<pcl::PointXYZ> get_points_on_line(pcl::PointXYZ start,
                                               pcl::PointXYZ end,
                                               float jump_distance) {
-    std::vector<pcl::PointXYZ> points_on_line;
-    pcl::PointXYZ start2end;
-    start2end = end - start;
-    float total_travel_line = sqrt(start2end * start2end);
-    pcl::PointXYZ hat_p = start2end / total_travel_line;
-    for (float i = jump_distance * 1; i < total_travel_line;
-         i = i + jump_distance) {
-        pcl::PointXYZ p = start + hat_p * i;
-        // std::cout << p.x << "," << p.y <<"," << p.z <<std::endl;
-        points_on_line.push_back(p);
-    }
-    return points_on_line;
+  std::vector<pcl::PointXYZ> points_on_line;
+  pcl::PointXYZ start2end;
+  start2end = end - start;
+  float total_travel_line = sqrt(start2end * start2end);
+  pcl::PointXYZ hat_p = start2end / total_travel_line;
+  for (float i = jump_distance * 1; i < total_travel_line;
+       i = i + jump_distance) {
+    pcl::PointXYZ p = start + hat_p * i;
+    // std::cout << p.x << "," << p.y <<"," << p.z <<std::endl;
+    points_on_line.push_back(p);
+  }
+  return points_on_line;
 }
 
 bool is_valid_movement(pcl::PointCloud<pcl::PointXYZ>::ConstPtr cloud,
                        pcl::PointXYZ current_point, pcl::PointXYZ dest_point,
                        pcl::KdTreeFLANN<pcl::PointXYZ> &kdtree,
                        float ScaleFactor) {
-    float jump_distance = 0.1 * ScaleFactor;  // Magic number ?
-    float radius_search = 0.25 * ScaleFactor;
-    std::vector<pcl::PointXYZ> v_points_on_line =
-        get_points_on_line(current_point, dest_point, jump_distance);
-    for (pcl::PointXYZ &p : v_points_on_line) {
-        if (radiusSearch(cloud, p, radius_search, kdtree) > 5) {
-            // std::cout <<"Found Obstacle"<< p.x << "," <<p.y << "," <<p.z<<
-            // std::endl;
-            return false;
-        }
+  float jump_distance = 0.1 * ScaleFactor; // Magic number ?
+  float radius_search = 0.25 * ScaleFactor;
+  std::vector<pcl::PointXYZ> v_points_on_line =
+      get_points_on_line(current_point, dest_point, jump_distance);
+  for (pcl::PointXYZ &p : v_points_on_line) {
+    if (radiusSearch(cloud, p, radius_search, kdtree) > 5) {
+      // std::cout <<"Found Obstacle"<< p.x << "," <<p.y << "," <<p.z<<
+      // std::endl;
+      return false;
     }
-    return true;
+  }
+  return true;
 }
 // void test_valid_movement(pcl::PointCloud<pcl::PointXYZ>::ConstPtr cloud,
 //                          pcl::KdTreeFLANN<pcl::PointXYZ> kdtree) {
@@ -145,22 +145,21 @@ bool is_valid_movement(pcl::PointCloud<pcl::PointXYZ>::ConstPtr cloud,
 pcl::PointXYZ getRandomPointOnPlaneDefBy3Points(pcl::PointXYZ point1,
                                                 pcl::PointXYZ point2,
                                                 pcl::PointXYZ point3) {
-    pcl::PointXYZ spanVector1 = point3 - point1;
-    pcl::PointXYZ spanVector2 = point3 - point2;
+  pcl::PointXYZ spanVector1 = point3 - point1;
+  pcl::PointXYZ spanVector2 = point3 - point2;
 
-    std::random_device
-        rd;  // Will be used to obtain a seed for the random number engine
-    std::mt19937 gen(
-        rd());  // Standard mersenne_twister_engine seeded with rd()
-    std::uniform_real_distribution<> dis(-30.0, 30.0);
-    float RandomNum1 = dis(gen);
-    float RandomNum2 = dis(gen);
-    pcl::PointXYZ randomVectorOnPlane =
-        RandomNum1 * spanVector1 + RandomNum2 * spanVector2 + point1;
-    return randomVectorOnPlane;
+  std::random_device
+      rd; // Will be used to obtain a seed for the random number engine
+  std::mt19937 gen(rd()); // Standard mersenne_twister_engine seeded with rd()
+  std::uniform_real_distribution<> dis(-90.0, 90.0);
+  float RandomNum1 = dis(gen);
+  float RandomNum2 = dis(gen);
+  pcl::PointXYZ randomVectorOnPlane =
+      RandomNum1 * spanVector1 + RandomNum2 * spanVector2 + point1;
+  return randomVectorOnPlane;
 }
 void crossProduct(pcl::PointXYZ v_A, pcl::PointXYZ v_B, pcl::PointXYZ &c_P) {
-    c_P.x = v_A.y * v_B.z - v_A.z * v_B.y;
-    c_P.y = -(v_A.x * v_B.z - v_A.z * v_B.x);
-    c_P.z = v_A.x * v_B.y - v_A.y * v_B.x;
+  c_P.x = v_A.y * v_B.z - v_A.z * v_B.y;
+  c_P.y = -(v_A.x * v_B.z - v_A.z * v_B.x);
+  c_P.z = v_A.x * v_B.y - v_A.y * v_B.x;
 }

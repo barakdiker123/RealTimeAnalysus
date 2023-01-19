@@ -1,8 +1,11 @@
 
 #include "visualizer_cloud_and_path.hpp"
 
-Visualized Visualized::set_cloud(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud) {
+Visualized
+Visualized::set_cloud(pcl::PointCloud<pcl::PointXYZ>::ConstPtr cloud) {
   viewer->addPointCloud<pcl::PointXYZ>(cloud, "sample cloud");
+  viewer->setPointCloudRenderingProperties(
+      pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 3, "sample cloud");
   return *this;
 }
 Visualized Visualized::set_path(std::list<pcl::PointXYZ> path_to_unknown) {
@@ -14,8 +17,8 @@ Visualized Visualized::set_path(std::list<pcl::PointXYZ> path_to_unknown) {
     index++;
   }
   if (!path_to_unknown.empty()) {
-    viewer->addSphere(path_to_unknown.front(), 0.25 * ScaleFactor + 0.01, 0.9,
-                      0.2, 0.2, "Starting Point");
+    viewer->addSphere(path_to_unknown.front(), 0.25 * ScaleFactor + 0.01, 0.2,
+                      0.9, 0.7, "Starting Point");
   }
   return *this;
 }
@@ -30,8 +33,27 @@ void Visualized::run() {
   }
 }
 
-Visualized Visualized::set_edges(std::vector<Edge> &v_edges) {}
-Visualized Visualized::set_RRTCloud(pcl::PointCloud<pcl::PointXYZ> &RRTCloud) {}
+Visualized Visualized::set_edges(std::vector<Edge> &v_edges) {
+  int index = 1;
+  for (Edge edge : v_edges) {
+    std::stringstream ss;
+    ss << "navigate_line" << index;
+    viewer->addLine<pcl::PointXYZ>((edge.p_point1), (edge.p_point2), ss.str());
+    index++;
+  }
+  return *this;
+}
+Visualized
+Visualized::set_RRTCloud(pcl::PointCloud<pcl::PointXYZ>::ConstPtr RRTCloud) {
+  int index = 1;
+  for (pcl::PointXYZ p : *RRTCloud) {
+    std::stringstream ss;
+    ss << "PointNavigate" << index;
+    viewer->addSphere(p, 0.2 * ScaleFactor, 0.9, 0.2, 0.0, ss.str());
+    index++;
+  }
+  return *this;
+}
 
 void visualizer_cloud_and_path(
 

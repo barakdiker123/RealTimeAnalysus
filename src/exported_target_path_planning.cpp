@@ -41,10 +41,9 @@ PathBuilder::operator()(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud,
       howManyTimesTriesEachScaleFactor;
   while (path_to_the_unknown.size() < howLongIsAValidPath) {
     path_to_the_unknown.clear();
+    RRTCloud.reset(new pcl::PointCloud<pcl::PointXYZ>);
+    v_edges.clear();
 
-    std::vector<Edge> v_edges;
-    pcl::PointCloud<pcl::PointXYZ>::Ptr RRTCloud(
-        new pcl::PointCloud<pcl::PointXYZ>);
     get_navigation_points(cloud, StartPoint, knownPoint1, knownPoint2,
                           knownPoint3, ScaleFactor, path_to_the_unknown,
                           v_edges, RRTCloud);
@@ -81,10 +80,9 @@ void PathBuilder::operator()(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud,
       howManyTimesTriesEachScaleFactor;
   while (path_to_the_unknown.size() < howLongIsAValidPath) {
     path_to_the_unknown.clear();
+    RRTCloud.reset(new pcl::PointCloud<pcl::PointXYZ>);
+    v_edges.clear();
 
-    std::vector<Edge> v_edges;
-    pcl::PointCloud<pcl::PointXYZ>::Ptr RRTCloud(
-        new pcl::PointCloud<pcl::PointXYZ>);
     get_navigation_points(cloud, StartPoint, knownPoint1, knownPoint2,
                           knownPoint3, ScaleFactor, path_to_the_unknown,
                           v_edges, RRTCloud);
@@ -122,10 +120,9 @@ void PathBuilder::operator()(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud,
       howManyTimesTriesEachScaleFactor;
   while (path_to_the_unknown.size() < howLongIsAValidPath) {
     path_to_the_unknown.clear();
+    RRTCloud.reset(new pcl::PointCloud<pcl::PointXYZ>);
+    v_edges.clear();
 
-    std::vector<Edge> v_edges;
-    pcl::PointCloud<pcl::PointXYZ>::Ptr RRTCloud(
-        new pcl::PointCloud<pcl::PointXYZ>);
     get_navigation_points(cloud, StartPoint, knownPoint1, knownPoint2,
                           knownPoint3, ScaleFactor, path_to_the_unknown,
                           v_edges, RRTCloud);
