@@ -7,9 +7,9 @@
 * [Description](#description)
 * [Requirement](#requirement)
 * [Building The Project](#building-the-project)
+* [Running The Demo](#running-the-demo)
 * [Simple Example](#simple-example)
 * [Custom Installation](#custom-installation)
-* [Running The Demo](#running-the-demo)
 *****
 
 ![Colored RRT](pictures/PictureRRTColor.png)
@@ -56,6 +56,7 @@ cd tests
 ./generalized_test
 ```
 To continue to next simulation click `q`
+*****
 if you want to change to a bigger scalefactor do
 
 ``` 
