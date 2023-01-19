@@ -1,6 +1,7 @@
 
 
 #include "Auxilary.h"
+#include <cmath>
 
 /**
  * @brief This function search for additional points in the radius
@@ -145,13 +146,18 @@ bool is_valid_movement(pcl::PointCloud<pcl::PointXYZ>::ConstPtr cloud,
 pcl::PointXYZ getRandomPointOnPlaneDefBy3Points(pcl::PointXYZ point1,
                                                 pcl::PointXYZ point2,
                                                 pcl::PointXYZ point3) {
+  pcl::PointXYZ Vector1 = point3 - point1;
+  pcl::PointXYZ Vector2 = point3 - point2;
   pcl::PointXYZ spanVector1 = point3 - point1;
   pcl::PointXYZ spanVector2 = point3 - point2;
+
+  gram_schmint_process(/* Input -> */ Vector1, Vector2,
+                       /* Output -> */ spanVector1, spanVector2);
 
   std::random_device
       rd; // Will be used to obtain a seed for the random number engine
   std::mt19937 gen(rd()); // Standard mersenne_twister_engine seeded with rd()
-  std::uniform_real_distribution<> dis(-90.0, 90.0);
+  std::uniform_real_distribution<> dis(-50.0, 50.0);
   float RandomNum1 = dis(gen);
   float RandomNum2 = dis(gen);
   pcl::PointXYZ randomVectorOnPlane =
@@ -162,4 +168,12 @@ void crossProduct(pcl::PointXYZ v_A, pcl::PointXYZ v_B, pcl::PointXYZ &c_P) {
   c_P.x = v_A.y * v_B.z - v_A.z * v_B.y;
   c_P.y = -(v_A.x * v_B.z - v_A.z * v_B.x);
   c_P.z = v_A.x * v_B.y - v_A.y * v_B.x;
+}
+
+void gram_schmint_process(pcl::PointXYZ v1, pcl::PointXYZ v2,
+                          pcl::PointXYZ &normalized_v1,
+                          pcl::PointXYZ &normalized_v2) {
+  normalized_v1 = 1 / sqrtf(v1 * v1) * v1;
+  normalized_v2 = v2 - (normalized_v1 * v2) * normalized_v1;
+  normalized_v2 = 1 / sqrtf(normalized_v2 * normalized_v2) * normalized_v2;
 }
